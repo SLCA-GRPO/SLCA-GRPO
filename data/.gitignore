@@ -1,0 +1,9 @@
+# Ship only preview samples + registration under git; the big training
+# parquets are published separately via Hugging Face.
+*.parquet
+*.arrow
+*.feather
+
+# Allow the tiny preview jsonl.
+!samples/
+!samples/*

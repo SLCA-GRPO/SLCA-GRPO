@@ -1,0 +1,116 @@
+# Base hydra config for SLCA-GRPO on Toucan tool-calling.
+# Command-line overrides in `rl/slca_grpo/train_slca_grpo.sh` pin the actual
+# data files, model path, output dir and algorithm-specific knobs. This file
+# only provides sensible defaults that can be reused across backbones.
+
+hydra:
+  # Reuse verl's built-in trainer/rollout configs.
+  searchpath:
+    - file://verl/trainer/config
+
+defaults:
+  - ppo_trainer
+  - _self_
+
+data:
+  # Placeholders; the launcher script overrides these.
+  train_files: ./data/toucan_toolcall_rl.parquet
+  val_files:   ./data/toucan_eval_4k_unified.parquet
+
+  max_prompt_length: 16384
+  max_response_length: 8192
+  train_batch_size: 64
+  filter_overlong_prompts: true
+  truncation: error
+  need_tools_kwargs: false
+  return_raw_chat: true
+
+  train_max_samples: -1
+  val_max_samples: 0
+
+actor_rollout_ref:
+  model:
+    path: ./pretrained_models/Qwen2.5-7B-Instruct
+    trust_remote_code: true
+    use_shm: false
+    use_remove_padding: true
+    enable_gradient_checkpointing: true
+
+  rollout:
+    name: vllm
+    mode: async
+    tensor_model_parallel_size: 1
+    gpu_memory_utilization: 0.82
+    prompt_length: ${oc.select:data.max_prompt_length}
+    response_length: ${oc.select:data.max_response_length}
+    max_model_len: 24576
+    max_num_seqs: 24
+    enable_prefix_caching: true
+    enable_chunked_prefill: true
+    enforce_eager: true
+    free_cache_engine: true
+    # GRPO group size (rollouts per prompt).
+    n: 16
+    log_prob_micro_batch_size_per_gpu: 32
+
+    multi_turn:
+      enable: true
+      max_assistant_turns: 10
+      max_user_turns: 6
+      max_parallel_calls: 20
+      max_tool_response_length: 4096
+      tool_response_truncate_side: middle
+      format: hermes
+      # We rely on the training data's instruction field to carry per-example
+      # tool schemas rather than injecting them via the chat template.
+      disable_tool_schema_injection: true
+      # Any tool name emitted by the policy is routed to ToucanVLLMTool.
+      wildcard_tool_name: toucan_tool
+
+    agent:
+      default_agent_loop: tool_agent
+      num_workers: 8
+
+  ref:
+    log_prob_micro_batch_size_per_gpu: 32
+
+  actor:
+    optim:
+      lr: 1e-6
+    ppo_mini_batch_size: ${data.train_batch_size}
+    ppo_micro_batch_size_per_gpu: 16
+    use_kl_loss: true
+    kl_loss_coef: 0.001
+    kl_loss_type: low_var_kl
+    entropy_coeff: 0.0
+
+algorithm:
+  # Overridden by the launcher to slca_grpo for the main run.
+  adv_estimator: grpo
+  use_kl_in_reward: false
+
+trainer:
+  project_name: slca_grpo
+  experiment_name: qwen2_5_7b_slca_grpo
+  n_gpus_per_node: 8
+  nnodes: 2
+  save_freq: 10
+  max_actor_ckpt_to_keep: 3
+  max_critic_ckpt_to_keep: 3
+  test_freq: -1
+  total_epochs: 1
+  logger: '["wandb"]'
+  default_local_dir: ./outputs/rl/qwen2_5_7b_slca_grpo
+  val_before_train: false
+
+reward_model:
+  enable: false
+  reward_manager: naive
+  enable_resource_pool: false
+  launch_reward_fn_async: true
+
+custom_reward_function:
+  # Resolved to rl/slca_grpo/reward_fn.py by the launcher.
+  path: ./rl/slca_grpo/reward_fn.py
+  name: compute_score
+  reward_kwargs: {}

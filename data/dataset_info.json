@@ -1,0 +1,36 @@
+{
+  "toucan_toolcall_sft": {
+    "file_name": "toucan_toolcall_sft.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages",
+      "tools": "tools"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant",
+      "observation_tag": "tool_response",
+      "function_tag": "tool_call",
+      "system_tag": "system"
+    }
+  },
+  "toucan_toolcall_full": {
+    "file_name": "toucan_toolcall_full.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "messages",
+      "tools": "tools"
+    },
+    "tags": {
+      "role_tag": "role",
+      "content_tag": "content",
+      "user_tag": "user",
+      "assistant_tag": "assistant",
+      "observation_tag": "tool_response",
+      "function_tag": "tool_call",
+      "system_tag": "system"
+    }
+  }
+}

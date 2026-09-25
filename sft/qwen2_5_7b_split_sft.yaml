@@ -1,0 +1,44 @@
+### model
+# Replace this with your local/cached path to Qwen2.5-7B-Instruct.
+model_name_or_path: ./pretrained_models/Qwen2.5-7B-Instruct
+trust_remote_code: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+deepspeed: examples/deepspeed/ds_z2_config.json  # ZeRO-2
+flash_attn: fa2
+
+### dataset
+# Registered in LLaMA-Factory's data/dataset_info.json as:
+#   "toucan_toolcall_sft"  ->  ./data/toucan_toolcall_sft.json
+# See sft/README.md for dataset registration instructions.
+dataset: toucan_toolcall_sft
+template: qwen
+cutoff_len: 16384
+overwrite_cache: true
+preprocessing_num_workers: 128
+dataloader_num_workers: 128
+
+### output
+output_dir: ./outputs/sft_split/qwen2_5_7b_toucan_toolcall
+logging_steps: 10
+save_total_limit: 2
+save_strategy: epoch
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+report_to: none  # one of [none, wandb, tensorboard, swanlab, mlflow]
+
+### training
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
+learning_rate: 5e-6
+num_train_epochs: 2.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+resume_from_checkpoint: null
+group_by_length: true

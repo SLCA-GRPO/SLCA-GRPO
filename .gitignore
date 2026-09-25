@@ -1,0 +1,80 @@
+# ----- Python -----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+
+# ----- Virtual envs -----
+.venv/
+venv/
+env/
+.conda/
+.python-version
+
+# ----- Editors / OS -----
+.vscode/
+.idea/
+.cursor/
+.claude/
+.gemini/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ----- Model artefacts & training output (not tracked here) -----
+outputs/
+checkpoints/
+ckpt*/
+wandb/
+logs/
+runs/
+tensorboard/
+*.ckpt
+*.safetensors
+*.bin
+*.pt
+*.pth
+pretrained_models/
+
+# ----- Eval artefacts -----
+eval_results/
+
+# ----- Data (keep previews, skip everything else) -----
+# see data/.gitignore for the allow-list
+data/*.parquet
+data/*.arrow
+data/*.feather
+data/*.json
+!data/dataset_info.json
+data/*.jsonl
+
+# ----- Generated tool / rollout traces -----
+tool_debug/
+reward_function/
+rollout_dumps/
+
+# ----- Misc -----
+*.log
+*.bak
+*.tmp
+core.*
+
+# ----- Release staging (NOT shipped to GitHub) -----
+# Data package is uploaded to HF separately; please_delete.md files are
+# author-only notes for the review period and must never leave local.
+toucan-toolcall-slca-data/
+please_delete.md
+.git_legacy_backup_20260422/

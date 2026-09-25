@@ -1,0 +1,43 @@
+### model
+# Full-data SFT reference run (epoch=1, all 74k examples) used in the
+# "SFT-only upper bound" reported in the paper.
+model_name_or_path: ./pretrained_models/Qwen2.5-7B-Instruct
+trust_remote_code: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+deepspeed: examples/deepspeed/ds_z2_config.json
+flash_attn: fa2
+
+### dataset
+# Full Toucan tool-calling SFT set (after irrelevant-query filtering).
+dataset: toucan_toolcall_full
+template: qwen
+cutoff_len: 16384
+overwrite_cache: true
+preprocessing_num_workers: 128
+dataloader_num_workers: 64
+
+### output
+output_dir: ./outputs/sft_full/qwen2_5_7b_toucan_toolcall
+logging_steps: 10
+save_steps: 500
+save_total_limit: 3
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+report_to: none
+
+### training
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
+learning_rate: 5e-6
+num_train_epochs: 1.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+resume_from_checkpoint: null
+group_by_length: true

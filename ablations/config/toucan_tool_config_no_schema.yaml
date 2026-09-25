@@ -1,0 +1,47 @@
+# Ablation (ii): w/o SGLS.
+#
+# Same rollout tool wiring as rl/slca_grpo/config/tool_config/toucan_tool_config.yaml,
+# with one change:
+#   - class_name switches to ToucanVLLMToolNoSchema
+#   - that class never puts the tool definition (JSON schema) into the
+#     simulator prompt, so the frozen LLM has to invent the return payload
+#     from the tool name and arguments alone.
+#
+# Expected effect: more malformed tool returns, unexpected JSON structures and
+# stronger distribution drift between simulated and real API responses.
+#
+# Requires `${REPO_ROOT}/ablations` on PYTHONPATH so that
+# `tools.toucan_vllm_tool_no_schema` resolves; train_ablation_wo_sgls.sh does
+# this for you.
+
+tools:
+  - class_name: "tools.toucan_vllm_tool_no_schema.ToucanVLLMToolNoSchema"
+    config:
+      type: native
+
+      # Base URL of the tool-simulator vLLM server.
+      # Start it with rl/sgls/serve_sgls_qwen3_235b.sh (default port 8003).
+      base_url: "http://127.0.0.1:8003/v1"
+
+      # The served-model-name exposed by the simulator server.
+      model: "qwen3-235b-a22b"
+
+      # Sampling parameters for the simulator.
+      temperature: 0.6
+      max_new_tokens: 4096
+      # Total timeout (queue + inference) in seconds.
+      timeout: 540
+
+    # Tool schema: still needed by the ToolParser, but never shown to the simulator.
+    tool_schema:
+      type: "function"
+      function:
+        name: "toucan_tool"
+        description: "A tool that queries the Toucan simulation environment via an external vLLM API (NO schema guidance)."
+        parameters:
+          type: "object"
+          properties:
+            query:
+              type: "string"
+              description: "The query or prompt to send to the Toucan environment."
+          required: ["query"]

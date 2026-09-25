@@ -1,0 +1,65 @@
+SLCA-GRPO
+Copyright 2026 The SLCA-GRPO Authors
+
+This product includes software developed for the paper
+"SLCA-GRPO: Resolving Cross-Segment Credit Misattribution in Tool-Calling RL".
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may not
+use this file except in compliance with the License. You may obtain a copy of
+the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+--------------------------------------------------------------------------------
+Third-party components
+--------------------------------------------------------------------------------
+
+verl (Volcano Engine Reinforcement Learning for LLMs)
+    https://github.com/volcengine/verl
+    Copyright 2024 Bytedance Ltd. and/or its affiliates
+    Licensed under the Apache License, Version 2.0
+
+    A copy of verl v0.7.0.dev is vendored in this repository under `verl/`,
+    with modifications required by SLCA-GRPO. Every modified file is listed in
+    `verl/SLCA_PATCHES.md`. Original copyright notices, contributor
+    attributions and the upstream LICENSE and Notice.txt are retained
+    unmodified under `verl/`, as required by Apache-2.0 section 4.
+
+Toucan-1.5M
+    https://huggingface.co/datasets/Agent-Ark/Toucan-1.5M
+    Licensed under the Apache License, Version 2.0
+
+    The dataset splits released alongside this repository are filtered and
+    resampled derivatives of Toucan-1.5M. See `data/README.md` for the full
+    derivation. The upstream corpus itself is not redistributed here.
+
+Berkeley Function-Calling Leaderboard (BFCL) / Gorilla
+    https://github.com/ShishirPatil/gorilla
+    Licensed under the Apache License, Version 2.0
+
+tau^2-Bench
+    https://github.com/sierra-research/tau2-bench
+    Licensed under the MIT License
+
+EvalScope
+    https://github.com/modelscope/evalscope
+    Licensed under the Apache License, Version 2.0
+
+--------------------------------------------------------------------------------
+Models used but not redistributed
+--------------------------------------------------------------------------------
+
+This repository redistributes no model weights. The following models are
+downloaded by the user from their original providers and are governed by their
+own licenses:
+
+    Qwen2.5-7B-Instruct                 Apache-2.0
+    Qwen3-8B-Base                       Apache-2.0
+    Qwen3-235B-A22B-Instruct-2507       Apache-2.0   (frozen SGLS simulator)
+    GPT-OSS-120B                        Apache-2.0   (frozen summary judge)
+    Qwen2.5-3B-Instruct                 Qwen Research License, NON-COMMERCIAL
+                                                     use only
+
+Note that Qwen2.5-3B-Instruct is not Apache-2.0. Any model derived from it by
+running the training code in this repository inherits the Qwen Research
+License and may be used for non-commercial research only.

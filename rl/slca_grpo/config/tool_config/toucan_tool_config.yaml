@@ -1,0 +1,33 @@
+tools:
+  - class_name: "tools.toucan_vllm_tool.ToucanVLLMTool"
+    config:
+      type: native
+
+      # Base URL of the Schema-Guided LLM Simulator (SGLS) vLLM server.
+      # Start it with rl/sgls/serve_sgls_qwen3_235b.sh (default port 8003).
+      base_url: "http://127.0.0.1:8003/v1"
+
+      # The served-model-name exposed by SGLS (must match --served-model-name).
+      model: "qwen3-235b-a22b"
+
+      # Sampling parameters for the simulator.
+      temperature: 0.6
+      max_new_tokens: 4096
+      # Total timeout (queue + inference) in seconds. Raise on very busy shards.
+      timeout: 540
+
+    # Wildcard routing: every model-emitted tool name is sent to the SGLS tool
+    # because the trainer sets `disable_tool_schema_injection: true` and
+    # `wildcard_tool_name: toucan_tool` in the trainer config.
+    tool_schema:
+      type: "function"
+      function:
+        name: "toucan_tool"
+        description: "Queries the SGLS tool-simulation environment via an external vLLM API."
+        parameters:
+          type: "object"
+          properties:
+            query:
+              type: "string"
+              description: "The query or arguments payload sent to SGLS."
+          required: ["query"]

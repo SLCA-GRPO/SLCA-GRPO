@@ -1,0 +1,44 @@
+### model
+# Replace this with your local/cached path to the base model.
+model_name_or_path: ./pretrained_models/Qwen2.5-7B-Instruct
+trust_remote_code: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+deepspeed: examples/deepspeed/ds_z2_config.json  # ZeRO-2
+flash_attn: fa2
+
+### dataset
+# Planner-only SFT data (summary stripped, <answer> tags added).
+# Build it with baselines/rltr/prepare_planner_sft_data.py and register the
+# resulting JSON in LLaMA-Factory's data/dataset_info.json.
+dataset: toucan_planner_sft
+template: qwen
+cutoff_len: 16384
+overwrite_cache: true
+preprocessing_num_workers: 128
+dataloader_num_workers: 128
+
+### output
+output_dir: ./outputs/planner_sft/qwen2_5_7b_planner
+logging_steps: 10
+save_total_limit: 2
+save_strategy: epoch
+plot_loss: true
+overwrite_output_dir: true
+save_only_model: false
+report_to: none
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
+learning_rate: 5e-6
+num_train_epochs: 1.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+resume_from_checkpoint: null
+group_by_length: true
